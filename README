@@ -1,0 +1,41 @@
+8/2/2013
+
+Client 		Complete
+Keep Alive 	Complete
+Parser		Complete
+Tunnel Creation	Complete
+Delete Tunnel	Incomplete
+
+The following files contain classes for connecting to an Open vSwitch OVSDB server daemon, requesting Bridge info, parsing the response, extracting Bridge UUID, and then creating a GRE Tunnel interface with that ID.
+
+OVSDBClient
+============================================================================
+Methods: 
+
+connectToserver() - connects to server over Java socket. Requires Host IP info. Assumes default port of 6632
+tunnel() - creates GRE tunnel. Requires Host IP, GRE tunnel Key, tunnel end point (Remote IP)
+disconnectServer() - closes connection
+jsonKeepAlive() - multithreaded echo request generator used by My Task class
+
+OVSDBCommands
+============================================================================
+Methods:
+
+Monitor() - creates JSON string with OVS Monitor format. At present, only requests Bridge info from OVS
+transact() - creates GRE tunnel string. Uses Bridge UUID returned by monitor. Gre Tunnel names are gre + GRE Key value.
+
+OVSDBParser
+==========================================================================
+Methods:
+
+parseJSONResposne() - retrieves OVS JSON String replies and parses the JSON Reply object ex. {"method:value"}.
+loadArray() - loads JSON key:value pairs into an array
+getID() - retrieves OVS reply ID
+getBridgeUUID() - retrieves Bridge UUID 
+
+
+ Parser accepts JSON String Object of form {"method":"value"}, removes tokens,
+ * formats key:value pairs and loads array as such:  |key|value|key|value|
+ * Then searches for necessary key: value pairs  ex. id:001 Bridge:92fcdfc4-767f-4e35-941d-1f0695b85453
+ * Note: Each key's value = key index + 1.
+ * Note: Values in JSON Array's(collections) ex. [value:value:value] are not parsed and cannot be searched
